@@ -511,6 +511,12 @@ def write_athdf(filename, fdata, varsize_bytes=4, locsize_bytes=8):
     # for ibvar, bvar in enumerate(vars_only_b):
     #     B[ibvar] = fdata["mb_data"][bvar]
 
+    # KGF: arrays for CKS coordinate transformation
+    x = np.empty((nx3, nx2, nx1))
+    y = np.empty((nx3, nx2, nx1))
+    z = np.empty((nx3, nx2, nx1))
+
+
     for mb in range(nmb):
         logical = fdata["mb_logical"][mb]
         LogicalLocations[mb] = logical[:3]
@@ -560,29 +566,33 @@ def write_athdf(filename, fdata, varsize_bytes=4, locsize_bytes=8):
         # /grand/RadBlackHoleAcc/lzhang/edd_survey/16_8_d30_s3
         bh_a = 0.3
         # use volume-centered coordinates
+        x[:, :, :] = x1v[mb][None, None, :]
+        y[:, :, :] = x2v[mb][None, :, None]
+        z[:, :, :] = x3v[mb][:, None, None]
+
         (alpha, betax, betay, betaz, g_tt, g_tx, g_ty, g_tz, g_xx, g_xy, g_xz,
-         g_yy, g_yz, g_zz) = cks_geometry(bh_a, x1[mb], x2[mb], x3[mb])
-        uut = normal_lorentz(fdata["mb_data"]['velx']['mb'],
-                             fdata["mb_data"]['vely']['mb'],
-                             fdata["mb_data"]['velz']['mb'],
+         g_yy, g_yz, g_zz) = cks_geometry(bh_a, x, y, z)
+        uut = normal_lorentz(fdata["mb_data"]['velx'][mb],
+                             fdata["mb_data"]['vely'][mb],
+                             fdata["mb_data"]['velz'][mb],
                              g_xx, g_xy, g_xz, g_yy, g_yz, g_zz)
-        ut, ux, uy, uz = norm_to_coord(uut, fdata["mb_data"]['velx']['mb'],
-                                       fdata["mb_data"]['vely']['mb'],
-                                       fdata["mb_data"]['velz']['mb'],
+        ut, ux, uy, uz = norm_to_coord(uut, fdata["mb_data"]['velx'][mb],
+                                       fdata["mb_data"]['vely'][mb],
+                                       fdata["mb_data"]['velz'][mb],
                                        alpha, betax, betay, betaz)
         u_t, u_x, u_y, u_z = lower_vector(ut, ux, uy, uz, g_tt, g_tx, g_ty, g_tz,
                                           g_xx, g_xy, g_xz, g_yy, g_yz, g_zz)
-        bt, bx, by, bz = three_field_to_four_field(fdata["mb_data"]['bcc1']['mb'],
-                                                   fdata["mb_data"]['bcc2']['mb'],
-                                                   fdata["mb_data"]['bcc3']['mb'],
+        bt, bx, by, bz = three_field_to_four_field(fdata["mb_data"]['bcc1'][mb],
+                                                   fdata["mb_data"]['bcc2'][mb],
+                                                   fdata["mb_data"]['bcc3'][mb],
                                                    ut, ux, uy, uz, u_x, u_y, u_z)
-        fdata["mb_data"]['velx']['mb'] = ux
-        fdata["mb_data"]['vely']['mb'] = uy
-        fdata["mb_data"]['velz']['mb'] = uz
+        fdata["mb_data"]['velx'][mb] = ux
+        fdata["mb_data"]['vely'][mb] = uy
+        fdata["mb_data"]['velz'][mb] = uz
 
-        fdata["mb_data"]['bcc1']['mb'] = bx
-        fdata["mb_data"]['bcc2']['mb'] = by
-        fdata["mb_data"]['bcc3']['mb'] = bz
+        fdata["mb_data"]['bcc1'][mb] = bx
+        fdata["mb_data"]['bcc2'][mb] = by
+        fdata["mb_data"]['bcc3'][mb] = bz
 
     # KGF: moved from above
     for ivar, var in enumerate(vars_without_b):
