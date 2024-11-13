@@ -12,9 +12,9 @@ Example usage:
 ❯ python make_athdf.py -v /grand/RadBlackHoleAcc/vis/edd_survey/16_8_d30_s3/edd_survey.full
 ```
 
-Converts 600 `.bin` files, 6.6 GB each, to `.athdf` files (2.1 GB each) and `.athdf.xdmf` files (5.0 MB each). This simulation used SMR with 8 levels of refinement, so all files have the same number of MeshBlocks and occupy the same amount of storage space.
+Converts 600 `.bin` files, 6.6 GB each, to `.athdf` files (2.1 GB each) and `.athdf.xdmf` files (5.0 MB each).  This simulation used SMR with 8 levels of refinement, so all source `.bin` files have the same number of MeshBlocks and occupy the same amount of storage space (and take roughly 1.5 minutes to convert). Approx. 4.0 TB source files reduced to about 2.1 TB in about 15 hours, if serial.
 
-Cannot run on a Polaris UAN without getting killed due to memory limits. 
+Cannot run on a Polaris UAN without getting killed due to memory limits (at least for 6.6 GB source file). Example usage on a compute node:
 ```bash
 ❯ qsub -A RadBlackHoleAcc -q debug -I -l select=1,walltime=0:60:00,filesystems=swift:grand
 ❯ module use /soft/modulefiles/; module load conda/2024-04-29; conda activate
@@ -22,7 +22,7 @@ Cannot run on a Polaris UAN without getting killed due to memory limits.
 ❯ python make_athdf.py -v /grand/RadBlackHoleAcc/vis/edd_survey/16_8_d30_s3/edd_survey.full
 ```
 
-### Original `.bin` `filedata["var_names"]`
+### Original `.bin` complete list of `filedata["var_names"]`
 ```
 # ['dens', 'velx', 'vely', 'velz', 'eint', 's_00', 'bcc1', 'bcc2', 'bcc3', 'r00', 'r01', 'r02', 'r03', 'r11', 'r12', 'r13', 'r22', 'r23', 'r33', 'r00_ff', 'r01_ff', 'r02_ff', 'r03_ff', 'r11_ff', 'r12_ff', 'r13_ff', 'r22_ff', 'r23_ff', 'r33_ff']
 ```
