@@ -90,6 +90,11 @@ import os
 
 import warnings
 
+# KGF
+vars_without_b_final = ['dens', 'ux', 'uy', 'uz', 'r00', 'r00_ff']
+vars_only_b_final = ['bx', 'by', 'bz']
+
+
 def read_binary(filename):
     """
     Reads a bin file from filename to dictionary.
@@ -586,6 +591,12 @@ def write_athdf(filename, fdata, varsize_bytes=4, locsize_bytes=8):
                                                    fdata["mb_data"]['bcc2'][mb],
                                                    fdata["mb_data"]['bcc3'][mb],
                                                    ut, ux, uy, uz, u_x, u_y, u_z)
+        # TODO(KGF): instead of just changing the output .athdf, also modify the Python
+        # dictionary: rename vector keys and delete
+
+        # fdata["mb_data"]['ux'] = fdata["mb_data"].pop("velx")
+        # del fdata["mb_data"]["eint"] ...
+
         fdata["mb_data"]['velx'][mb] = ux
         fdata["mb_data"]['vely'][mb] = uy
         fdata["mb_data"]['velz'][mb] = uz
@@ -600,9 +611,9 @@ def write_athdf(filename, fdata, varsize_bytes=4, locsize_bytes=8):
     for ibvar, bvar in enumerate(vars_only_b):
         B[ibvar] = fdata["mb_data"][bvar]
 
-    # KGF: change string names for variables
-    vars_without_b = ['dens', 'ux', 'uy', 'uz', 'r00', 'r00_ff']
-    vars_only_b = ['bx', 'by', 'bz']
+    # KGF: change string names for relativistic velocity, magnetic field vector variables
+    vars_without_b = vars_without_b_final
+    vars_only_b = vars_only_b_final
 
     # KGF: end changes
     # --------------------------------
@@ -733,8 +744,14 @@ def write_xdmf_for(xdmfname, dumpname, fdata, mode="auto"):
     fp.write("""<Grid Name="Mesh" GridType="Collection">\n""")
     fp.write(f""" <Time Value="{fdata['time']}"/>\n""")
 
-    vars_without_b = [v for v in fdata["var_names"] if "bcc" not in v]
-    vars_only_b = [v for v in fdata["var_names"] if v not in vars_without_b]
+    #---------------
+    # KGF
+    # vars_without_b = [v for v in fdata["var_names"] if "bcc" not in v]
+    # vars_only_b = [v for v in fdata["var_names"] if v not in vars_without_b]
+    vars_without_b = vars_without_b_final
+    vars_only_b = vars_only_b_final
+
+    # -----------------
 
     nx1 = fdata["nx1_out_mb"]
     nx2 = fdata["nx2_out_mb"]
