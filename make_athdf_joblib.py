@@ -35,10 +35,10 @@ def convert_single_file(fname, verbose=False, overwrite=False):
     athdf_name = fname.replace(".bin", ".athdf")
     xdmf_name = athdf_name + ".xdmf"
     # if only .athdf OR .athdf.xdmf exists, script will reconvert both in all cases
-    if (os.path.isfile(athdf_name) and os.path.isfile(xhdf_name)) and not overwrite:
+    if (os.path.isfile(athdf_name) and os.path.isfile(xdmf_name)) and not overwrite:
         if verbose:
-            printf(f'Skipping source {fname} since overwrite={overwrite}')
-            printf(f'and both {athdf_name} and {xhdf_name} already exist...')
+            print(f'Skipping source {fname} since overwrite={overwrite}')
+            print(f'and both {athdf_name} and {xdmf_name} already exist...')
     else:
         filedata = bin_convert.read_binary(fname)
         bin_convert.write_athdf(athdf_name, filedata)
