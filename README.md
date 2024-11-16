@@ -1,5 +1,5 @@
 # athenak-vis
-ALCF Visualization team scripts for AthenaK simulation outputs, originally for Department of Energy SC24 Exhibitor booth. 
+ALCF Visualization team scripts for AthenaK simulation outputs, originally for generating a video for the Department of Energy's SC24 Exhibitor booth. 
 
 Slightly modified versions of scripts from original repo: https://github.com/IAS-Astrophysics/athenak/tree/main/vis/python
 
